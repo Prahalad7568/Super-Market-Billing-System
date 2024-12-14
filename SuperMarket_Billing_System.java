@@ -1,930 +1,223 @@
-/**
- * @author Om Kumar Thakur, Shashwat Mishra, Anavya Upadhyay and Prahalad Ghosalya
- *
- */
-
-package firstJavaProgram;
 import java.util.*;
+import java.time.LocalDateTime;
+import java.text.DecimalFormat;
 
+// Product class to represent items in the supermarket
+class Product {
+    private String productId;
+    private String name;
+    private double price;
+    private String category;
+    private String hsnCode; // Added HSN Code for GST
 
-interface Operation
-{
-	
-public void login_staff();
-public void login_customer();
-public void menu_display();
-public void  Add(int code,String name,int quant,int price);
-public void  Search(Billing_System []obj,int size);
-public void Edit(Billing_System obj[],int size);
-public void Delete(Billing_System []obj,int size);
-public void bill_calc(Billing_System obj[],int size);
-public void bill_display(Billing_System obj[],int size);
+    public Product(String productId, String name, double price, String category, String hsnCode) {
+        this.productId = productId;
+        this.name = name;
+        this.price = price;
+        this.category = category;
+        this.hsnCode = hsnCode;
+    }
+
+    // Getters
+    public String getProductId() { return productId; }
+    public String getName() { return name; }
+    public double getPrice() { return price; }
+    public String getCategory() { return category; }
+    public String getHsnCode() { return hsnCode; }
 }
 
+// Bill Item class to track individual items in a bill
+class BillItem {
+    private Product product;
+    private int quantity;
+    private double totalPrice;
+    private double cgstRate;
+    private double sgstRate;
 
-
-
-class Billing_System implements Operation //Super Class
-{
-
-	 private int code,quantity,price;
-	 private String name;
-	 
-	 
-    Billing_System() //Non Parameterized Constructor
-	 {
-		this.code=0;
-		this.quantity=0;
-		this.price=0;
-		this.name="";
-	 }
-	
-	 
-	 
-   public void login_staff()
-   {
-    Scanner sc = new Scanner(System.in);
-    
-    
-	System.out.println("\n\n\n\n\n\n\n\n");
-	System.out.println("                                                                                      <<<< Staff Login Credentials >>>>                                           ");
-	System.out.println("                                                                                      ___________________________________                 ");
-	System.out.println("\n\n");  
-	System.out.print("                                                                                          Name : ");
-	
-	String uname = sc.nextLine();
-	System.out.print("\n                                                                                          UID  : ");
-	String pass = sc.nextLine();
-	System.out.print("\n\n\n\n\n");
-	System.out.print("\n\n\n\n\n\n\n...........................................................................................................................................................................................................................................\n\n");
-	 
-  }
-   
-   
-   
-   
-   public void login_customer()
-   {
-    Scanner sc = new Scanner(System.in);
-    
-    System.out.println("\n\n\n\n\n\n\n\n");
-	System.out.println("                                                                                      <<<< Customer Login Credentials >>>>                                           ");
-	System.out.println("                                                                                      ___________________________________                 ");
-	System.out.println("\n\n");  
-	System.out.print("                                                                                          Name      : ");
-	
-	String uname = sc.nextLine();
-	System.out.print("\n                                                                                          Phone No. : ");
-	String phone = sc.nextLine();
-	System.out.print("\n\n\n\n\n");
-	System.out.print("\n\n\n\n\n\n\n...........................................................................................................................................................................................................................................\n\n");
-	 	
-  }
-  
-  
-
- public void menu_display()
- {
-
-
-    System.out.print("\n\n\n\n\n\n                                                                                             BILLING SYSTEM   ");
-    System.out.print("\n                                                                                            ________________");
-    System.out.print("\n\n\n                                                                                               Main Menu");
-System.out.print("\n\n\n\n\n                                                                                              1. Add Goods");
-    System.out.print("\n                                                                                              2. Search");
-    System.out.print("\n                                                                                              3. Edit Goods");
-    System.out.print("\n                                                                                              4. Delete Goods");
-    System.out.print("\n                                                                                              5. Calculate Bill");
-    System.out.print("\n                                                                                              6. Display Bill");
-    System.out.print("\n                                                                                              7. Customer's Feedback");
-    System.out.print("\n                                                                                              8. Exit");
-    System.out.print("\n\n\n\n                                                                                         Please enter the choice : ");
- 
- }
-
-
-
-
-public void  Add(int code,String name,int quant,int price)
- {
- 
-   this.code=code;
-   this.name=name;
-   this.quantity=quant;
-   this.price=price;
-  
- }
-
-
-
-
- public void Search(Billing_System obj[],int n)
- {
-
-   int f=0;
-   Scanner sc=new Scanner(System.in);
-
-   if(obj[0].code==0)
-   System.out.print("                                                                                                           NO ITEM ADDED !!");
-
-    else
-    {
-     System.out.print("\n\n\n\n\n                                                                               ************* SEARCH MENU *************");
-     System.out.print("\n\n\n\n\n                                                                                             1.By Code");
-     System.out.print("\n                                                                                             2.By Name");
-     System.out.print("\n\n\n                                                                                        Enter option 1 or 2 : ");
-   
-     int option=sc.nextInt();
-
-    if(option==1)
-    {
-	  System.out.print("\n                                                                                      Enter the code of the item : ");
-      int codes=sc.nextInt();
-      int j=n-1;
-
-
-    while(j>-1)
-    {
-	
-    if(codes==obj[j].code)
-     {
-     f++;
-     break;
-     }
-     j--;
-     
+    public BillItem(Product product, int quantity) {
+        this.product = product;
+        this.quantity = quantity;
+        this.totalPrice = product.getPrice() * quantity;
+        
+        // Default GST rates
+        this.cgstRate = 0.09; // 9% CGST
+        this.sgstRate = 0.09; // 9% SGST
     }
 
-    if(f>0)
-    { 
-      System.out.println("\n\n\n\n\n\n\n");	  
-      System.out.println("                                                  Code                           Name                           Quantity                          Price\n\n");
-      System.out.println("                                                   "+obj[j].code+"                              "+obj[j].name+"                                 "+obj[j].quantity+"                              "+obj[j].price);
+    // Getters
+    public Product getProduct() { return product; }
+    public int getQuantity() { return quantity; }
+    public double getTotalPrice() { return totalPrice; }
+    public double getCgstAmount() { return totalPrice * cgstRate; }
+    public double getSgstAmount() { return totalPrice * sgstRate; }
+}
+
+// Bill class to manage bill generation and details
+class Bill {
+    private String billId;
+    private List<BillItem> items;
+    private LocalDateTime billDate;
+    private double totalAmount;
+    private double cgstRate;
+    private double sgstRate;
+
+    public Bill() {
+        this.billId = generateBillId();
+        this.items = new ArrayList<>();
+        this.billDate = LocalDateTime.now();
+        this.cgstRate = 0.09; // 9% CGST
+        this.sgstRate = 0.09; // 9% SGST
     }
 
-    else	
-     System.out.println("                                                                                       ************ Item not found  ********");
-
-    }//if condition for option 1 ends
-
-
-    if(option==2)
-    {
-     System.out.print("\n                                                                                       Enter the name of the item : ");
-     sc.nextLine();
-     String names=sc.nextLine();
-     int j=n-1;
-    
-    while(j>-1)
-    {
-      if(names.equalsIgnoreCase(obj[j].name))
-      { 
-	  f++;
-      break;
-      }
-     j--;
+    private String generateBillId() {
+        return "BILL-" + System.currentTimeMillis();
     }
-  
-    if(f>0)
-    { 
-      System.out.println("\n\n\n\n\n\n\n");	  
-      System.out.println("                                                  Code                           Name                           Quantity                          Price\n\n");
-      System.out.println("                                                   "+obj[j].code+"                              "+obj[j].name+"                                 "+obj[j].quantity+"                              "+obj[j].price);
+
+    public void addItem(Product product, int quantity) {
+        items.add(new BillItem(product, quantity));
     }
-  
-     else
-      System.out.println("                                                                                       ************ Item not found  ********");
-  
-      }  //if condition for option 2 ends
 
-    //menu_display();
+    public double calculateSubtotal() {
+        totalAmount = items.stream()
+                           .mapToDouble(BillItem::getTotalPrice)
+                           .sum();
+        return totalAmount;
+    }
 
-    }//else ends
-   
-  }// search function ends
- 
- 
+    public double calculateTotalCGST() {
+        return items.stream()
+                    .mapToDouble(BillItem::getCgstAmount)
+                    .sum();
+    }
 
+    public double calculateTotalSGST() {
+        return items.stream()
+                    .mapToDouble(BillItem::getSgstAmount)
+                    .sum();
+    }
 
-   public void Delete(Billing_System obj[],int n)
-    {
-	
-     //Delete the item by either using their code or name
-	// System.out.print("\n\n\n\n\n\n\n\n\n.........................................................................................................................................................................\n\n"); 
-		
-	   int f=0;
-	   Scanner sc=new Scanner(System.in);
-		
-	   System.out.print("\n\n\n\n\n                                                                                  ************* DELETE MENU **************");
-	   System.out.print("\n\n\n\n\n                                                                                                 1.By Code");
-	   System.out.print("\n                                                                                                 2.By Name");
-	   System.out.print("\n\n\n                                                                                           Enter option 1 or 2 : ");
-	   
-	   int option=sc.nextInt();
+    public double calculateTotalWithGST() {
+        return calculateSubtotal() + calculateTotalCGST() + calculateTotalSGST();
+    }
 
-	  if(option==1)
-	  {
-		System.out.print("\n                                                                                       Enter the code of the item : ");
-	   int codes=sc.nextInt();
-	   int j=n-1;
+    public void printBill() {
+        DecimalFormat df = new DecimalFormat("#.##");
+        
+        System.out.println("===============================");
+        System.out.println("SUPERMARKET BILLING SYSTEM");
+        System.out.println("Bill ID: " + billId);
+        System.out.println("Date: " + billDate);
+        System.out.println("-------------------------------");
+        System.out.println("ITEM DETAILS:");
+        
+        for (BillItem item : items) {
+            System.out.printf("%-20s %3d x $%-8.2f $%-8.2f%n", 
+                item.getProduct().getName(), 
+                item.getQuantity(), 
+                item.getProduct().getPrice(),
+                item.getTotalPrice());
+        }
+        
+        System.out.println("-------------------------------");
+        System.out.println("TAX BREAKDOWN:");
+        System.out.printf("Subtotal:        $%-8.2f%n", calculateSubtotal());
+        System.out.printf("CGST (9%%):       $%-8.2f%n", calculateTotalCGST());
+        System.out.printf("SGST (9%%):       $%-8.2f%n", calculateTotalSGST());
+        System.out.printf("Total GST:       $%-8.2f%n", calculateTotalCGST() + calculateTotalSGST());
+        System.out.printf("Total Bill:      $%-8.2f%n", calculateTotalWithGST());
+        System.out.println("===============================");
+    }
+}
 
+// Inventory Management Class
+class Inventory {
+    private Map<String, Product> products;
 
-	  while(j>-1)
-	  {
-		
-	  if(codes==obj[j].code)
-	  {
-	   f++;
-	   break;
-	  }
-	   j--;
-	 }
+    public Inventory() {
+        products = new HashMap<>();
+        // Initialize with some default products and their HSN Codes
+        addProduct(new Product("P001", "Milk", 3.50, "Dairy", "0404"));
+        addProduct(new Product("P002", "Bread", 2.25, "Bakery", "1905"));
+        addProduct(new Product("P003", "Eggs", 4.00, "Dairy", "0407"));
+        addProduct(new Product("P004", "Cheese", 5.50, "Dairy", "0406"));
+        addProduct(new Product("P005", "Apple", 0.50, "Fruits", "0808"));
+    }
 
-	  if(f>0)
-	 { 
-		  obj[j].code=0;
-		  obj[j].name=" ";
-		  obj[j].quantity=0;
-		  obj[j].price=0;
-		 
-		bill_display(obj,n); 
-		//menu_display();
-	  }
-	  
-	  else if(f==0)
-	  {
-		  System.out.print("                                                                                                 Item not found !!");
-			//menu_display();  
-	  }
+    public void addProduct(Product product) {
+        products.put(product.getProductId(), product);
+    }
 
-	}//if condition for option 1 ends
-	
-	 
+    public Product getProduct(String productId) {
+        return products.get(productId);
+    }
 
+    public void listAllProducts() {
+        System.out.println("Available Products:");
+        products.values().forEach(p -> 
+            System.out.printf("%s - %s (HSN: %s): $%.2f%n", 
+                p.getProductId(), p.getName(), p.getHsnCode(), p.getPrice())
+        );
+    }
+}
 
-    if(option==2)
-	{
-	   System.out.print("\n                                                                                          Enter the name of the item : ");
-	   sc.nextLine();
-	   String names=sc.nextLine();
-	   
-	    int j=n-1;
-	    
-	  while(j>-1)
-	 {
-	  if(names.equalsIgnoreCase(obj[j].name))
-	   { 
-		  f++;
-	     break;
-	   }
-	     j--;
-	 }
-	  
-	  if(f>0)
-	   {
-		  obj[j].code=0;
-		  obj[j].name=" ";
-		  obj[j].quantity=0;
-		  obj[j].price=0;
-			 
-	   }
-	  
-	   else
-	   System.out.println("                                                                                       ************Item not found********");
-	  
-	    }  //if condition for option 2 ends
+// Main Application Class
+public class Main {
+    public static void main(String[] args) {
+        Inventory inventory = new Inventory();
+        Scanner scanner = new Scanner(System.in);
 
-}   //Delete() ends
+        while (true) {
+            System.out.println("\n--- Supermarket Billing System ---");
+            System.out.println("1. View Products");
+            System.out.println("2. Create New Bill");
+            System.out.println("3. Exit");
+            System.out.print("Enter your choice: ");
 
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
 
+            switch (choice) {
+                case 1:
+                    inventory.listAllProducts();
+                    break;
+                case 2:
+                    createBill(inventory, scanner);
+                    break;
+                case 3:
+                    System.out.println("Thank you for using Supermarket Billing System!");
+                    scanner.close();
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
 
+    private static void createBill(Inventory inventory, Scanner scanner) {
+        Bill bill = new Bill();
 
+        while (true) {
+            inventory.listAllProducts();
+            System.out.print("Enter Product ID (or 'done' to finish): ");
+            String productId = scanner.nextLine();
 
+            if (productId.equalsIgnoreCase("done")) {
+                break;
+            }
 
-   public void Edit(Billing_System obj[],int n)
-    {
-	
-      Scanner sc=new Scanner(System.in);
- 
+            Product product = inventory.getProduct(productId);
+            if (product == null) {
+                System.out.println("Invalid Product ID!");
+                continue;
+            }
 
-      System.out.print("\n\n\n\n\n\n\n                                                                              Do you want to edit the record ? YES/NO : ");
-      String choice =sc.nextLine();
+            System.out.print("Enter Quantity: ");
+            int quantity = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
 
-     if(choice.equalsIgnoreCase("YES"))
-     {
-       System.out.print("\n\n                                                                                   Enter the code of the quantity : ");
-
-       int codes=sc.nextInt();
-       int index= get_index(obj,codes,n);
-
-      if(index>=0 && index<n)
-      {
-
-       System.out.print("\n\n\n                                                                                           1.Edit Quantity");
-       System.out.print("\n                                                                                           2.Edit Price (Not Available for Customers)");
-       System.out.print("\n\n\n                                                                                         Enter option (1 or 2) : ");
-       
-       int op=sc.nextInt();  //Takes Option 1 or 2
- 
-        if(op==1)
-        {
-       System.out.print("\n\n                                                                                          Enter new Quantity : ");
-       int quaantity=sc.nextInt();
-       obj[index].quantity=quaantity;
-       System.out.println("\n\n\n\n\n\n                                                                   ***************** Item Edited and Detail is updated ******************                                               ");
+            bill.addItem(product, quantity);
         }
 
-  
-      if(op==2)
-       {
-       System.out.print("\n                                                                                          Enter new Price : ");
-       int priice=sc.nextInt();
-       obj[index].price=priice;
-       System.out.println("\n\n\n                                                                       **************** Item Edited and Detail is updated ***************                                            ");
-       }
-      
-     }//if ends
-      
-    }//outer if ends
-
-
-    else if(choice.equalsIgnoreCase("NO"))
-     {
-	   System.out.println("\n                                                                                 No detail is to be updated !!\n\n");
-	   //menu_display();
-     }
- 
-     else 
-     {
-      System.out.println("\n                                                                                          Invalid Code !!");
-      //menu_display();
-     }
-
-} //Edit method ends
-
-
-
-
-
-
-private int get_index(Billing_System obj[],int codes,int n)
- {
-	
-int j=n-1;
-
- while(j>-1)
- {
-	
-   if(codes==obj[j].code)
-    return(j);
-   
-    j--;
-  }
-   return -1;
-   
- } //get_index() ends
-
-
-
-
-
-
-  public void bill_calc(Billing_System obj[],int n)
-  {
-	
-    System.out.println("\n\n\n\n\n\n\n\n\n\n");
-    System.out.println("                                                                         ******************* BILL CALCULATION ************************");
-    System.out.println("\n\n\n\n                                                  Code                           Name                           Quantity                          Price\n\n");
-    int total=0;
-
-    for(int j=0;j<n;j++)
-    {
-	 if(obj[j].code>0)
-	 System.out.println("                                                   "+obj[j].code+"                              "+obj[j].name+"                                 "+obj[j].quantity+"                              "+obj[j].price);	
-	 total+=obj[j].price;
+        bill.printBill();
     }
-
-   System.out.println("\n\n\n\n                                                                                         GRAND TOTAL : "+total+"\n\n");
-   
-   //menu_display();
-
-  } //bill_calc() ends
-
-
-
-
-   public void bill_display(Billing_System obj[],int n)
-   {
-	//System.out.print("\n\n\n\n.........................................................................................................................................................................\n\n"); 	  
-
-	System.out.println("\n\n\n\n\n\n\n");
-	System.out.println("                                                                            ******************* INVOICE BILL ************************");
-	System.out.println("\n\n\n\n\n                                                  Code                           Name                           Quantity                          Price\n\n");
-
-	int total=0;
-
-	for(int j=0;j<n;j++)
-	{
-		if(obj[j].code !=0)
-		{
-		 System.out.println("                                                   "+obj[j].code+"                              "+obj[j].name+"                                 "+obj[j].quantity+"                              "+obj[j].price);
-		total+=obj[j].price;
-		}
-	}
-	  //menu_display();
-	
-  } // bill_display() ends
-
-} // Super Class ends
-
-
-
-
-
-
-
-
-
-
-
-
-
-class Staff_emp extends Billing_System 
-{
-	
-  Billing_System sf=new Billing_System();
-  Billing_System st[]=new Billing_System[100];
-  Scanner sc=new Scanner(System.in);
-  
-  int size=0;
-  
-  Staff_emp()
-  {
-   sf.login_staff();
-  }
-  
-  private void add_item()
-  {    
-	     System.out.print("\n\n\n\n\n\n\n                                                                                **************  ADD ARTICLES  **************\n\n\n");
-	  
-		 System.out.print("\n\n\n                                                                                        Enter the code of item : ");
-		  int code=sc.nextInt();
-		  sc.nextLine();
-		  
-		  System.out.print("                                                                                        Enter the name of item : ");
-		  String name=sc.nextLine();
-		   
-		  System.out.print("                                                                                        Enter quantity of item : ");
-		  int quant=sc.nextInt();
-		  
-		  System.out.print("                                                                                        Enter price of item    : ");
-		  int price=sc.nextInt();
-		  
-	  st[size]=new Billing_System();
-	  st[size].Add(code,name,quant,price);
-	  
-	  size++;
-	  
-	  sc.nextLine();
-	  System.out.print("\n\n\n                                                                                  Do you want to add more items? (YES/NO) : ");
-	  String option=sc.nextLine();
-	  
-	 if(option.equalsIgnoreCase("YES"))
-		 add_item();
-	 
-	    else if(option.equalsIgnoreCase("NO"))
-	    {
-		  menu_driven();
-	    } 
-	 
-  } //add_item() ends
-  
-  
-  
-  private void searching()
-  {
-	  
-      sf.Search(st,size);
-   
-      System.out.print("\n\n\n\n\n\n                                                                                   Do you want to search more items? (YES/NO) : ");
-	  String option=sc.nextLine();
-	  
-	  if(option.equalsIgnoreCase("YES"))
-	    searching();
-	 
-	  else if(option.equalsIgnoreCase("NO"))
-	   {
-	   menu_driven();
-	   } 
-   
-  } //searching() ends
-  
-  
-  
-  private void delete()
-   {
-	sf.Delete(st,size); 
-	
-	  System.out.print("\n\n\n\n\n\n\n                                                                                Do you want to delete more items? (YES/NO) : ");
-	  String option=sc.nextLine();
-	  
-	  if(option.equalsIgnoreCase("YES"))
-	  delete();
-	 
-	  else if(option.equalsIgnoreCase("NO"))
-	   {
-	   menu_driven();
-	   } 
-	  
-   } //delete() ends
-   
-   
-   
-  private void edit()
-   {
-   sf.Edit(st,size);  
-   
-      System.out.print("\n\n\n\n\n\n                                                                                  Do you want to edit more items? (YES/NO) : ");
-	  String option=sc.nextLine();
-	  
-	  if(option.equalsIgnoreCase("YES"))
-		edit();
-	 
-	  else if(option.equalsIgnoreCase("NO"))
-	   {
-	   menu_driven();
-	   } 
-	   
-   } //edit() ends
-   
-   
-   
-  private void display()
-   {
-   sf.bill_display(st,size);
-   menu_driven();
-   
-   } //display() ends
-   
-   
-  private void calc()
-   {
-   sf.bill_calc(st,size);  
-   menu_driven();
-   
-   } //calc() ends
-   
-   
-   
-	 public void menu_driven()
-	 {
-	//Starting of the main flow of the program
-	
-	Scanner sc=new Scanner(System.in);
-	
-	sf.menu_display();
-	
-	int ch= sc.nextInt();
-	System.out.print("\n\n\n\n\n\n\n");
-    System.out.print("\n\n\n\n....................................................................................................................................................................................................................\n\n");   
-
-	
-
-	while(ch>=1 && ch<=8)
-	{
-	
-	  switch(ch)
-	  {
-
-	  case 1:
-		    {  
-		      add_item();
-		       break;
-		     }
-	      
-	  case 2: {
-		      searching();
-		      break;
-	          }
-
-	  case 3: {
-		      edit();
-		      break;
-	          }
-
-	  case 4: {
-		     delete();
-		     break;
-	          }
-
-	  case 5: {
-		      calc();
-		     break;
-	          }
-	 
-	  case 6: {
-		      display();
-	          break;
-	           }
-	  
-	  case 7: {
-	         System.out.println("\n\n\n                                                                            ....................... EXIT .......................\n");
-	         System.exit(0); 
-             break;
-              }
-
-	  case 8: {
-		      System.out.println("\n\n\n                                                                           ........................ EXIT .......................\n");
-		      System.exit(0); 
-	          break;
-	          }
-
-	 default: {
-	          System.out.println("\n                                                             Please enter the correct choice");
-	          break;
-		      } 
-	   
-	    } //switch ends
-
-	  }//while ends
-		
-	} //function ends
-		
-	
-  } //Staff (SubClass) ends
-
-
-
-
-
-
-
-
-
-class Consumer extends Billing_System 
-{
-	
-	
-	Billing_System sf=new Billing_System();
-	  Billing_System cons[]=new Billing_System[100];
-	  Scanner sc=new Scanner(System.in);
-	  
-	  int size=0;
-	  
-	  
-	  Consumer()
-	  {
-	  sf.login_customer();
-	  }
-	  
-	  
-	  private void add_item()
-	  {    
-		     System.out.print("\n\n\n\n\n\n\n                                                                                **************  ADD ARTICLES  **************\n\n\n");
-		  
-			 System.out.print("\n\n\n                                                                                        Enter the code of item : ");
-			  int code=sc.nextInt();
-			  sc.nextLine();
-			  
-			  System.out.print("                                                                                        Enter the name of item : ");
-			  String name=sc.nextLine();
-			   
-			  System.out.print("                                                                                        Enter quantity of item : ");
-			  int quant=sc.nextInt();
-			  
-			  System.out.print("                                                                                        Enter price of item    : ");
-			  int price=sc.nextInt();
-			  
-		  cons[size]=new Billing_System();
-		  cons[size].Add(code,name,quant,price);
-		  
-		  size++;
-		  
-		  sc.nextLine();
-		  System.out.print("\n\n\n                                                                                  Do you want to add more items? (YES/NO) : ");
-		  String option=sc.nextLine();
-		  
-		 if(option.equalsIgnoreCase("YES"))
-			 add_item();
-		 
-		    else if(option.equalsIgnoreCase("NO"))
-		    {
-			  menu_driven();
-		    } 
-		 
-	  } //add_item() ends
-	  
-	  
-	  
-	  private void searching()
-	  {
-		  
-	      sf.Search(cons,size);
-	   
-	      System.out.print("\n\n\n\n\n\n                                                                                   Do you want to search more items? (YES/NO) : ");
-		  String option=sc.nextLine();
-		  
-		  if(option.equalsIgnoreCase("YES"))
-		    searching();
-		 
-		  else if(option.equalsIgnoreCase("NO"))
-		   {
-		   menu_driven();
-		   } 
-	   
-	  } //searching() ends
-	  
-	  
-	  
-	  private void delete()
-	   {
-		sf.Delete(cons,size); 
-		
-		  System.out.print("\n\n\n\n\n\n\n                                                                                Do you want to delete more items? (YES/NO) : ");
-		  String option=sc.nextLine();
-		  
-		  if(option.equalsIgnoreCase("YES"))
-		  delete();
-		 
-		  else if(option.equalsIgnoreCase("NO"))
-		   {
-		   menu_driven();
-		   } 
-		  
-	   } //delete() ends
-	   
-	   
-	   
-	  private void edit()
-	   {
-	   sf.Edit(cons,size);  
-	   
-	      System.out.print("\n\n\n\n\n\n                                                                                  Do you want to edit more items? (YES/NO) : ");
-		  String option=sc.nextLine();
-		  
-		  if(option.equalsIgnoreCase("YES"))
-			edit();
-		 
-		  else if(option.equalsIgnoreCase("NO"))
-		   {
-		   menu_driven();
-		   } 
-		   
-	   } //edit() ends
-	   
-	   
-	   
-	  private void display()
-	   {
-	   sf.bill_display(cons,size);
-	   menu_driven();
-	   
-	   } //display() ends
-	   
-	   
-	  private void calc()
-	   {
-	   sf.bill_calc(cons,size);  
-	   menu_driven();
-	   
-	   } //calc() ends
-	   
-	   
-	   
-	  private void feedback()
-	   {
-		   
-		System.out.print("\n\n\n\n\n\n                                                                                     Do you want to give the feedback (YES/NO)  : "); 
-		String ch=sc.nextLine();
-		
-		
-		if(ch.equalsIgnoreCase("YES"))
-		{
-	     System.out.print("\n\n\n                                                                                          Write to us : ");
-		 String feed=sc.nextLine();
-		 System.out.println("\n\n\n                                                                                       THANK YOU FOR YOUR FEEBACK !!!\n\n\n");
-		 menu_driven();
-		}
-		
-		if(ch.equalsIgnoreCase("NO"))
-		{
-			System.out.println("\n\n\n\n\n\n                                                                                         HAVE A GOOD DAY :) \n\n");
-			menu_driven();
-		} 
-		   
-	   }
-	   
-	   
-	   
-		 public void menu_driven()
-		 {
-		//Starting of the main flow of the program
-		
-		Scanner sc=new Scanner(System.in);
-		
-		sf.menu_display();
-		
-		int ch= sc.nextInt();
-		System.out.print("\n\n\n\n\n\n\n");
-	    System.out.print("\n\n\n\n....................................................................................................................................................................................................................\n\n");   
-
-		
-
-		while(ch>=1 && ch<=8)
-		{
-		
-		  switch(ch)
-		  {
-
-		  case 1:
-			    {  
-			      add_item();
-			       break;
-			     }
-		      
-		  case 2: {
-			      searching();
-			      break;
-		          }
-
-		  case 3: {
-			      edit();
-			      break;
-		          }
-
-		  case 4: {
-			     delete();
-			     break;
-		          }
-
-		  case 5: {
-			      calc();
-			     break;
-		          }
-		 
-		  case 6: {
-			      display();
-		          break;
-		           }
-		  
-		  case 7: {
-		          feedback();
-	              break;
-	              }
-
-		  case 8: {
-			      System.out.println("\n\n\n                                                                           ........................ EXIT .......................\n");
-			      System.exit(0); 
-		          break;
-		          }
-
-		 default: {
-		          System.out.println("\n                                                             Please enter the correct choice");
-		          break;
-			      } 
-		   
-		    } //switch ends
-
-		  }//while ends
-			
-		} //function ends
-				
-     }//Consumer (SubClass)  ends
-
-
-
-
-
-
-
-    public class SuperMarket_Billing_System
-    {	
-     public static void main(String[] args)
-      {
-	
-       Billing_System sf=new Billing_System();
-       Scanner sc = new Scanner(System.in);
-     
-       System.out.println("\n\n\n\n                                                                       >>>>>>>>>>>>>>>>   WELCOME TO THE  XYZ SUPERMARKET   <<<<<<<<<<<<<<<<");
-       System.out.println("\n                                                                                       *************************************");
-       System.out.print("\n\n\n\n\n                                                                      Do you want to continue as Staff or Customer (Staff/Customer)   : ");
-       
-       String identity=sc.nextLine();
-       
-       if(identity.equalsIgnoreCase("Staff"))
-       {
-       Staff_emp obj1=new Staff_emp();
-       obj1.menu_driven();
-       }
-       
-       if(identity.equalsIgnoreCase("Customer"))
-       {
-       Consumer obj2=new Consumer();
-        obj2.menu_driven();
-       }
-  
-      }//main method ends
-   }   //main class ends
-
-
-
+}
